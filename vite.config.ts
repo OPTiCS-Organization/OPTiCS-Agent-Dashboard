@@ -12,6 +12,13 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       port: parseInt(env.VITE_DASHBOARD_PORT || '5240'),
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5230',
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          ws: true,
+        },
+      },
     },
   }
 })

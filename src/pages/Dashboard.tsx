@@ -149,9 +149,14 @@ export function Dashboard() {
     loadHistoricalData();
     loadPendingRequest();
 
-    const socket: Socket = io(`${import.meta.env.VITE_AGENT_URL}/info`, {
+    const agentUrl = import.meta.env.VITE_AGENT_URL;
+    const socketBase = agentUrl.startsWith('/') ? window.location.origin : agentUrl;
+    const socketPath = agentUrl.startsWith('/') ? `${agentUrl}/socket.io` : '/socket.io';
+
+    const socket: Socket = io(`${socketBase}/info`, {
       transports: ['websocket'],
       reconnection: true,
+      path: socketPath,
     });
 
     socket.on('connect', () => {
@@ -181,9 +186,10 @@ export function Dashboard() {
       console.log('Disconnected from monitoring socket');
     });
 
-    const notifSocket: Socket = io(`${import.meta.env.VITE_AGENT_URL}/notification`, {
+    const notifSocket: Socket = io(`${socketBase}/notification`, {
       transports: ['websocket'],
       reconnection: true,
+      path: socketPath,
     });
 
     notifSocket.on('notification', (data: ConnectRequestNotification) => {
