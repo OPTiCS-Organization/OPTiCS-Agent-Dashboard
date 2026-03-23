@@ -10,7 +10,7 @@ export function Initialize({ onNavigate }: InitializeProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:3001/connect');
+      const response = await fetch(`${import.meta.env.VITE_AGENT_URL}/connect`);
       const data = await response.json();
       setConnectionCode(data.value);
     };
