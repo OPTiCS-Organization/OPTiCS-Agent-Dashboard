@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useGlobalVariable } from "../context/GlobalVariable.context"
 import { Panel } from "../types/Panel";
-import { LayoutPanelTop, Settings } from "lucide-react";
+import { LayoutPanelTop, Settings, Boxes } from "lucide-react";
 
 const IconSize = 'w-5 h-5'
 
 const menu = [
   { name: 'Dashboard', id: Panel.Dashboard, icon: <LayoutPanelTop className={IconSize} /> },
+  { name: 'Services', id: Panel.Services, icon: <Boxes className={IconSize} /> },
   { name: 'Setting', id: Panel.Setting, icon: <Settings className={IconSize} /> },
 ]
 

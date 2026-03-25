@@ -106,6 +106,8 @@ export function Dashboard() {
   const [cpuData, setCpuData] = useState<CpuDataPoint[]>([]);
   const [memoryData, setMemoryData] = useState<MemoryDataPoint[]>([]);
   const [connectRequest, setConnectRequest] = useState<ConnectRequestNotification | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [activeServers, setActiveServers] = useState(0);
 
   useEffect(() => {
     const loadHistoricalData = async () => {
@@ -149,9 +151,16 @@ export function Dashboard() {
     loadHistoricalData();
     loadPendingRequest();
 
-    const agentUrl = import.meta.env.VITE_AGENT_URL;
+    const agentUrl = import.meta.env.VITE_AGENT_URL as string;
     const socketBase = agentUrl.startsWith('/') ? window.location.origin : agentUrl;
     const socketPath = agentUrl.startsWith('/') ? `${agentUrl}/socket.io` : '/socket.io';
+
+    fetch(`${agentUrl}/v1/service`)
+      .then(r => r.json())
+      .then((data: { serviceStatus: string }[]) => {
+        setActiveServers(data.filter(s => s.serviceStatus === 'Running').length);
+      })
+      .catch(() => {});
 
     const socket: Socket = io(`${socketBase}/info`, {
       transports: ['websocket'],
@@ -159,32 +168,20 @@ export function Dashboard() {
       path: socketPath,
     });
 
-    socket.on('connect', () => {
-      console.log('Connected to monitoring socket');
-    });
+    socket.on('connect', () => { setIsConnected(true); });
 
     socket.on('info', (data: InfoType) => {
-      console.log('Received data:', data);
       setCpuData((prev) => {
         const newData = [...prev, data.cpu];
-        if (newData.length > 120960) {
-          return newData.slice(-120960);
-        }
-        return newData;
+        return newData.length > 120960 ? newData.slice(-120960) : newData;
       });
-
       setMemoryData((prev) => {
         const newData = [...prev, data.memory];
-        if (newData.length > 120960) {
-          return newData.slice(-120960);
-        }
-        return newData;
+        return newData.length > 120960 ? newData.slice(-120960) : newData;
       });
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from monitoring socket');
-    });
+    socket.on('disconnect', () => { setIsConnected(false); });
 
     const notifSocket: Socket = io(`${socketBase}/notification`, {
       transports: ['websocket'],
@@ -196,9 +193,21 @@ export function Dashboard() {
       setConnectRequest(data);
     });
 
+    const serviceSocket: Socket = io(`${socketBase}/service`, {
+      transports: ['websocket'],
+      reconnection: true,
+      path: socketPath,
+    });
+
+    serviceSocket.on('service-status', (data: { serviceIndex: number; status: string }) => {
+      if (data.status === 'running') setActiveServers(prev => prev + 1);
+      if (data.status === 'stopped' || data.status === 'failed') setActiveServers(prev => Math.max(0, prev - 1));
+    });
+
     return () => {
       socket.disconnect();
       notifSocket.disconnect();
+      serviceSocket.disconnect();
     };
   }, []);
 
@@ -208,7 +217,7 @@ export function Dashboard() {
         <h1 className="text-primary-text-color text-3xl font-bold mb-6">대시보드</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <ServerStats activeServers={3} isConnected={true} />
+          <ServerStats activeServers={activeServers} isConnected={isConnected} />
           <ServerInfo ip="192.168.1.100" hostname="agent-server-01" />
           <div className="bg-modal-box-color border border-border-color rounded-md p-4 flex items-center justify-center">
             <span className="text-secondary-text-color text-sm">추가 정보</span>

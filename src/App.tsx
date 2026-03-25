@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Initialize } from "./pages/Initialize"
 import { Dashboard } from "./pages/Dashboard"
+import { Services } from "./pages/Services"
 import { Sidebar } from "./components/Sidebar";
 import { useGlobalVariable } from "./context/GlobalVariable.context";
 import { Panel } from "./types/Panel";
@@ -32,6 +33,7 @@ function App() {
           <Sidebar onNavigate={handleNavigate} />
           <div className={`transition-opacity duration-300 max-h-screen overflow-y-scroll ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
             {activePanel === Panel.Dashboard && <Dashboard />}
+            {activePanel === Panel.Services && <Services />}
             {activePanel === Panel.Setting && <Setting />}
           </div>
         </div>
