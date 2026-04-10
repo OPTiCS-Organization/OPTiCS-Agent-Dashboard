@@ -4,15 +4,23 @@ import { Panel } from "../types/Panel";
 interface GlobalVariableType {
   activePanel: Panel,
   setActivePanel: React.Dispatch<React.SetStateAction<Panel>>
+  ip: string | undefined,
+  setIp: React.Dispatch<React.SetStateAction<string | undefined>>,
+  agentCode: string | undefined,
+  setAgentCode: React.Dispatch<React.SetStateAction<string | undefined>>,
 }
 
 const GlobalVariableContext = createContext<GlobalVariableType | undefined>(undefined);
 
 export const GlobalVariableProvider = ({ children }: PropsWithChildren) => {
   const [activePanel, setActivePanel] = useState<Panel>(Panel.Initialize);
+  const [ip, setIp] = useState<string | undefined>();
+  const [agentCode, setAgentCode] = useState<string | undefined>();
   const value: GlobalVariableType = {
     activePanel: activePanel,
-    setActivePanel: setActivePanel
+    setActivePanel: setActivePanel,
+    ip, setIp,
+    agentCode, setAgentCode,
   };
 
   return (

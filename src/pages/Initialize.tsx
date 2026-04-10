@@ -1,28 +1,30 @@
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
+import { useGlobalVariable } from "../context/GlobalVariable.context";
 
 interface InitializeProps {
   onNavigate: () => void;
 }
 
 export function Initialize({ onNavigate }: InitializeProps) {
-  const [connectionCode, setConnectionCode] = useState('');
+  const {setIp, agentCode, setAgentCode} = useGlobalVariable();
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${import.meta.env.VITE_AGENT_URL}/connect`);
       const data = await response.json();
-      setConnectionCode(data.value);
+      setAgentCode(data.agentCode);
+      setIp(data.agentIp);
     };
 
     fetchData();
-  }, []);
+  }, [setAgentCode, setIp]);
 
 
   return (
     <div className="w-90 bg-modal-background-color rounded-md left-1/2 top-1/2 absolute -translate-1/2 border border-border-color shadow-md p-4 flex flex-col items-center">
       <div className="w-full h-22.5 bg-modal-box-color border border-border-color rounded-sm items-center justify-center flex flex-col relative">
-        <h2 className="text-service-color font-bold text-2xl">{connectionCode.toUpperCase()}</h2>
+        <h2 className="text-service-color font-bold text-2xl">{(agentCode?.toUpperCase()) ?? 'OFFLINE'}</h2>
         <span className="text-[10px] text-secondary-text-color leading-3">@ Connection Code</span>
       </div>
       <Button className="mt-2.5 self-end" duration={3000} onClick={onNavigate}>
