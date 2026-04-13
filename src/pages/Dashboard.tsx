@@ -4,6 +4,7 @@ import { ServerStats } from '../components/ServerStats';
 import { ServerInfo } from '../components/ServerInfo';
 import { CpuChart } from '../components/CpuChart';
 import { MemoryChart } from '../components/MemoryChart';
+import { useGlobalVariable } from '../context/GlobalVariable.context';
 
 interface CpuDataPoint {
   timestamp: number;
@@ -108,6 +109,7 @@ export function Dashboard() {
   const [connectRequest, setConnectRequest] = useState<ConnectRequestNotification | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [activeServers, setActiveServers] = useState(0);
+  const { ip, agentCode } = useGlobalVariable();
 
   useEffect(() => {
     const loadHistoricalData = async () => {
@@ -218,7 +220,7 @@ export function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <ServerStats activeServers={activeServers} isConnected={isConnected} />
-          <ServerInfo ip="192.168.1.100" hostname="agent-server-01" />
+          <ServerInfo ip={ip} hostname={agentCode} />
           <div className="bg-modal-box-color border border-border-color rounded-md p-4 flex items-center justify-center">
             <span className="text-secondary-text-color text-sm">추가 정보</span>
           </div>

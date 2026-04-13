@@ -1,5 +1,5 @@
 interface ServerInfoProps {
-  ip: string;
+  ip?: string;
   hostname?: string;
 }
 
@@ -10,12 +10,12 @@ export function ServerInfo({ ip, hostname }: ServerInfoProps) {
       <div className="space-y-2">
         <div>
           <div className="text-secondary-text-color text-xs mb-1">IP 주소</div>
-          <div className="text-primary-text-color text-sm font-mono">{ip}</div>
+          <div className="text-primary-text-color text-sm font-mono">{ip ?? "OFFLINE"}</div>
         </div>
         {hostname && (
           <div>
             <div className="text-secondary-text-color text-xs mb-1">호스트명</div>
-            <div className="text-primary-text-color text-sm">{hostname}</div>
+            <div className="text-primary-text-color text-sm">{hostname ?? "NOT INITIALIZED"}</div>
           </div>
         )}
       </div>
