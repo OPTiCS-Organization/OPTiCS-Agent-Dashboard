@@ -30,6 +30,7 @@ export const GlobalVariableProvider = ({ children }: PropsWithChildren) => {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useGlobalVariable = () => {
   const context = useContext(GlobalVariableContext);
   if (context === undefined) {

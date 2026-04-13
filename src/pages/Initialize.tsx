@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "../components/Button";
 import { useGlobalVariable } from "../context/GlobalVariable.context";
 
@@ -7,7 +7,7 @@ interface InitializeProps {
 }
 
 export function Initialize({ onNavigate }: InitializeProps) {
-  const {setIp, agentCode, setAgentCode} = useGlobalVariable();
+  const { setIp, agentCode, setAgentCode } = useGlobalVariable();
 
   useEffect(() => {
     const fetchData = async () => {
